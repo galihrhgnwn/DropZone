@@ -7,7 +7,7 @@ import { appRouter } from "./router";
 import { createContext } from "./context";
 import { env } from "./lib/env";
 import { Paths } from "@contracts/constants";
-import { generateSessionId, cleanupExpiredFiles } from "./lib/session";
+import { generateSessionId, cleanupExpiredFiles, generateStoredName } from "./lib/session";
 import { getDb } from "./queries/connection";
 import { files } from "@db/schema";
 import { eq, and, desc } from "drizzle-orm";
@@ -203,7 +203,7 @@ app.get("/f/:name", async (c) => {
     const stats = getFileStats(file.storedName);
     c.header("Content-Type", file.mimeType);
     c.header("Content-Length", String(stats?.size || 0));
-    c.header("Content-Disposition", `inline; filename="${file.originalName}"`);
+    c.header("Content-Disposition", `attachment; filename="${file.originalName}"`);
     
     return new Response(stream as any, { status: 200 });
   } catch (e) {
@@ -236,12 +236,4 @@ if (env.isProduction) {
   });
 }
 
-function generateStoredName(originalName: string): string {
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-  let id = "";
-  for (let i = 0; i < 8; i++) {
-    id += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  const ext = originalName.includes(".") ? originalName.slice(originalName.lastIndexOf(".")) : "";
-  return `${id}${ext}`;
-}
+

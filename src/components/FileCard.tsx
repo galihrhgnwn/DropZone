@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Copy, Check, Trash2, FileText, Image, Film, Music, Archive, Code, Clock } from 'lucide-react';
+import { Copy, Check, Trash2, FileText, Image, Film, Music, Archive, Code, Clock, Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import type { File as DbFile } from '@db/schema';
@@ -36,6 +36,15 @@ export default function FileCard({ file, onCopy, onDelete }: FileCardProps) {
     onCopy(url);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleDownload = () => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = file.originalName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const formatFileSize = (bytes: number): string => {
@@ -121,6 +130,15 @@ export default function FileCard({ file, onCopy, onDelete }: FileCardProps) {
                 Copy Link
               </>
             )}
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="h-8 w-8 p-0 text-muted-foreground hover:text-primary"
+            onClick={handleDownload}
+            title="Download File"
+          >
+            <Download size={14} />
           </Button>
           <Button
             variant="ghost"

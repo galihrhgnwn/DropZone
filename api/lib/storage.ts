@@ -2,8 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import { env } from "./env";
 
-const UPLOADS_DIR = path.join(process.cwd(), "uploads");
-const TEMP_DIR = path.join(process.cwd(), "uploads", "temp");
+const UPLOADS_DIR = path.join(process.cwd(), "storage");
+const TEMP_DIR = path.join(process.cwd(), "storage", "temp");
 
 if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });

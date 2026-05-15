@@ -12,13 +12,14 @@ export function generateSessionId(): string {
 }
 
 export function generateStoredName(originalName: string): string {
-  const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-  let id = "";
-  for (let i = 0; i < 8; i++) {
-    id += chars.charAt(Math.floor(Math.random() * chars.length));
+  const timestamp = Date.now();
+  const lastDotIndex = originalName.lastIndexOf(".");
+  if (lastDotIndex === -1) {
+    return `${originalName}_${timestamp}`;
   }
-  const ext = originalName.includes(".") ? originalName.slice(originalName.lastIndexOf(".")) : "";
-  return `${id}${ext}`;
+  const name = originalName.slice(0, lastDotIndex);
+  const ext = originalName.slice(lastDotIndex);
+  return `${name}_${timestamp}${ext}`;
 }
 
 export async function cleanupExpiredFiles() {
