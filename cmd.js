@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-// ESM: gunakan import statement sebagai pengganti require()
 import { spawn } from "child_process";
 import readline from "readline";
 import os from "os";
