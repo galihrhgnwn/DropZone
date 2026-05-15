@@ -29,7 +29,7 @@ export default function FileCard({ file, onCopy, onDelete }: FileCardProps) {
     minute: '2-digit',
   });
 
-  const url = `${window.location.origin}/f/${file.storedName}`;
+  const url = `${window.location.origin}/storage/${file.storedName}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(url);
@@ -79,7 +79,7 @@ export default function FileCard({ file, onCopy, onDelete }: FileCardProps) {
       {isImage && (
         <div className="relative aspect-video overflow-hidden bg-secondary">
           <img
-            src={`/f/${file.storedName}`}
+            src={`/storage/${file.storedName}`}
             alt={file.originalName}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />

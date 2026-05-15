@@ -158,7 +158,7 @@ app.post("/api/upload/finalize/:uploadId", async (c) => {
         id: Number(fileRecord.insertId),
         storedName,
         originalName,
-        url: `/f/${storedName}`,
+        url: `/storage/${storedName}`,
       },
     });
   } catch (e) {
@@ -167,10 +167,8 @@ app.post("/api/upload/finalize/:uploadId", async (c) => {
   }
 });
 
-// Serve file by stored name
-app.get("/f/:name", async (c) => {
-  const name = c.req.param("name");
-  
+// Serve file by stored name - shared handler
+const serveFile = async (c: any, name: string) => {
   try {
     // Cleanup expired first
     await cleanupExpiredFiles();
@@ -209,7 +207,11 @@ app.get("/f/:name", async (c) => {
   } catch (e) {
     return c.json({ error: "Failed to serve file" }, 500);
   }
-});
+};
+
+// Routes for file serving
+app.get("/f/:name", async (c) => serveFile(c, c.req.param("name")));
+app.get("/storage/:name", async (c) => serveFile(c, c.req.param("name")));
 
 // tRPC handler
 app.use("/api/trpc/*", async (c) => {
@@ -235,5 +237,3 @@ if (env.isProduction) {
     console.log(`Server running on http://localhost:${port}/`);
   });
 }
-
-
