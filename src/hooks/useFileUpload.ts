@@ -7,6 +7,7 @@ export interface UploadJob {
   progress: number;
   status: 'pending' | 'uploading' | 'finalizing' | 'completed' | 'error';
   error?: string;
+  url?: string;
 }
 
 export interface UploadedFileResult {
@@ -114,9 +115,10 @@ export function useFileUpload() {
       }
 
       const result = await finalizeRes.json();
-      updateJob(job.id, { status: 'completed' });
+      const fileResult = result.file as UploadedFileResult;
+      updateJob(job.id, { status: 'completed', url: fileResult.url });
 
-      return result.file as UploadedFileResult;
+      return fileResult;
     },
     [updateJob]
   );

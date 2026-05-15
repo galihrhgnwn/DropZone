@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { Upload, File, Clock, Infinity, ChevronDown, X } from 'lucide-react';
+import { Upload, File, Clock, Infinity, ChevronDown, X, Copy, Check } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
 import { useFileUpload, type UploadedFileResult } from '@/hooks/useFileUpload';
@@ -24,6 +24,7 @@ export default function UploadZone({ onUploadComplete }: UploadZoneProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [duration, setDuration] = useState<DurationOption>('forever');
   const [showDurationPicker, setShowDurationPicker] = useState(false);
+  const [copiedJobId, setCopiedJobId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { jobs, createJob, removeJob, uploadFile } = useFileUpload();
   const utils = trpc.useUtils();
@@ -75,6 +76,12 @@ export default function UploadZone({ onUploadComplete }: UploadZoneProps) {
       processFiles(e.target.files);
       e.target.value = '';
     }
+  };
+
+  const handleCopyLink = (url: string, jobId: string) => {
+    navigator.clipboard.writeText(url);
+    setCopiedJobId(jobId);
+    setTimeout(() => setCopiedJobId(null), 2000);
   };
 
   return (
@@ -215,6 +222,26 @@ export default function UploadZone({ onUploadComplete }: UploadZoneProps) {
                   </p>
                   {job.status === 'error' ? (
                     <p className="text-xs text-destructive mt-1">{job.error}</p>
+                  ) : job.status === 'completed' && job.url ? (
+                    <div className="mt-2 flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={job.url}
+                        readOnly
+                        className="flex-1 bg-secondary/50 border border-primary/30 rounded px-2 py-1 text-xs text-muted-foreground focus:outline-none focus:border-primary/50 cursor-text"
+                      />
+                      <button
+                        onClick={() => handleCopyLink(job.url!, job.id)}
+                        className="p-1.5 bg-primary/20 hover:bg-primary/30 rounded transition-colors flex-shrink-0"
+                        title="Copy link"
+                      >
+                        {copiedJobId === job.id ? (
+                          <Check size={14} className="text-green-400" />
+                        ) : (
+                          <Copy size={14} className="text-primary" />
+                        )}
+                      </button>
+                    </div>
                   ) : (
                     <div className="mt-2">
                       <Progress value={job.progress} className="h-1.5" />
